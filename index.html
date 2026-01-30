@@ -246,21 +246,21 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-    // আপনার দেওয়া কনফিগারেশন
+    // আপনার দেওয়া সঠিক কনফিগারেশন (databaseURL সহ)
     const firebaseConfig = {
       apiKey: "AIzaSyDJYDmNyk4tV0OgV3e-F28WSn6i7xLzaRQ",
       authDomain: "frf-app-e09c3.firebaseapp.com",
+      // এই লাইনটি আগে মিসিং ছিল, এখন ঠিক আছে
+      databaseURL: "https://frf-app-e09c3-default-rtdb.firebaseio.com",
       projectId: "frf-app-e09c3",
       storageBucket: "frf-app-e09c3.firebasestorage.app",
       messagingSenderId: "743522057184",
       appId: "1:743522057184:web:d7f08c4268406fb722c985"
     };
 
-    // Firebase Init Check
+    // Firebase Init
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
-    } else {
-        firebase.app(); // if already initialized, use that one
     }
     const db = firebase.database();
 
@@ -269,7 +269,7 @@
 
     let currentUser = localStorage.getItem('frf_user_name');
     let userRole = localStorage.getItem('frf_user_role');
-    let currentBalanceVal = 0; // বর্তমান ব্যালেন্স ট্র্যাক করার জন্য
+    let currentBalanceVal = 0; 
 
     window.onload = function() {
         if (currentUser && userRole) {
@@ -279,7 +279,7 @@
         }
     };
 
-    function firstTimeLogin() {
+    window.firstTimeLogin = function() {
         const pin = document.getElementById('input-pin').value;
         const name = document.getElementById('input-name').value;
         if (!name) { alert("দয়া করে নাম লিখুন"); return; }
@@ -312,23 +312,23 @@
             badge.innerText = "এডমিন"; badge.style.background = "#e74c3c"; badge.style.color = "white";
             document.getElementById('btn-expense').style.display = 'flex';
             document.getElementById('admin-pending-area').style.display = 'block';
-            document.getElementById('edit-balance-btn').style.display = 'inline-block'; // Edit btn show
+            document.getElementById('edit-balance-btn').style.display = 'inline-block';
             loadPendingRequests();
         }
         loadData();
     }
 
-    function logout() {
+    window.logout = function() {
         if(confirm("আপনি কি লগআউট করতে চান?")) {
             localStorage.clear();
             location.reload();
         }
     }
 
-    // --- জমা সাবমিট ফিক্স ---
-    function submitDeposit() {
-        // বাটনে চাপলে কাজ হচ্ছে কিনা চেক
-        console.log("Deposit Button Clicked");
+    // --- জমা সাবমিট (সংশোধিত) ---
+    window.submitDeposit = function() {
+        // বাটনে চাপলে এটা আসবে
+        alert("প্রসেসিং হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন");
 
         const amount = document.getElementById('dep-amount').value;
         const method = document.getElementById('dep-method').value;
@@ -336,7 +336,7 @@
         const trx = document.getElementById('dep-trx').value;
 
         if (!amount || !last3) {
-            alert("টাকার পরিমাণ এবং শেষ ৩ ডিজিট অবশ্যই দিতে হবে!");
+            alert("ভুল: টাকার পরিমাণ এবং শেষ ৩ ডিজিট অবশ্যই পূরণ করতে হবে।");
             return;
         }
 
@@ -351,22 +351,21 @@
             dateStr: new Date().toLocaleDateString('bn-BD')
         };
 
-        // Firebase Push
         db.ref('pending_requests').push(data)
             .then(() => {
-                showToast("অনুরোধ সফলভাবে পাঠানো হয়েছে!");
+                alert("সফল! জমা অনুরোধ পাঠানো হয়েছে।");
                 closeModal('deposit');
                 document.getElementById('dep-amount').value = '';
                 document.getElementById('dep-last3').value = '';
                 document.getElementById('dep-trx').value = '';
             })
             .catch((error) => {
-                alert("এরর: ডাটা পাঠানো যায়নি। ইন্টারনেট চেক করুন।\n" + error.message);
-                console.error("Firebase Error:", error);
+                alert("ব্যর্থ! ডাটাবেসে সেভ হয়নি। কারণ: " + error.message);
+                console.error(error);
             });
     }
 
-    function submitExpense() {
+    window.submitExpense = function() {
         const reason = document.getElementById('exp-reason').value;
         const amount = document.getElementById('exp-amount').value;
         if (!reason || !amount) { alert("সব তথ্য দিন"); return; }
@@ -381,11 +380,10 @@
             closeModal('expense');
             document.getElementById('exp-reason').value = '';
             document.getElementById('exp-amount').value = '';
-        });
+        }).catch(err => alert(err.message));
     }
 
-    // --- ব্যালেন্স এডিট ফিচার ---
-    function editBalance() {
+    window.editBalance = function() {
         let newBal = prompt("নতুন ব্যালেন্স কত হবে? (শুধুমাত্র সংখ্যা দিন)");
         if (newBal === null || newBal === "") return;
         
@@ -398,7 +396,6 @@
             return;
         }
 
-        // ব্যালেন্স এডজাস্টমেন্ট ক্যালকুলেশন
         let diff = newBal - currentBalanceVal;
         if (diff === 0) { alert("ব্যালেন্স একই আছে, পরিবর্তনের প্রয়োজন নেই।"); return; }
 
@@ -418,7 +415,6 @@
         });
     }
 
-    // --- ডাটা লোড ---
     function loadData() {
         db.ref('transactions').orderByChild('timestamp').limitToLast(50).on('value', snapshot => {
             const listEl = document.getElementById('list-all');
@@ -433,7 +429,7 @@
                 else totalOut += i.amount;
             });
 
-            currentBalanceVal = totalIn - totalOut; // গ্লোবাল ভেরিয়েবলে আপডেট
+            currentBalanceVal = totalIn - totalOut; 
             document.getElementById('balance').innerText = currentBalanceVal.toLocaleString('bn-BD');
             document.getElementById('total-in').innerText = totalIn.toLocaleString('bn-BD');
             document.getElementById('total-out').innerText = totalOut.toLocaleString('bn-BD');
@@ -554,10 +550,10 @@
         }).then(() => showToast("বাতিল করা হয়েছে"));
     };
 
-    function openModal(id) { document.getElementById('modal-'+id).style.display = 'flex'; }
-    function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
+    window.openModal = function(id) { document.getElementById('modal-'+id).style.display = 'flex'; }
+    window.closeModal = function(id) { document.getElementById('modal-'+id).style.display = 'none'; }
     
-    function switchTab(tab) {
+    window.switchTab = function(tab) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.list-container').forEach(l => l.style.display = 'none');
         document.getElementById('tab-'+tab).classList.add('active');
