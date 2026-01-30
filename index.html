@@ -333,7 +333,7 @@
         let pin = document.getElementById('input-pin').value;
         const name = document.getElementById('input-name').value;
         
-        pin = toEng(pin); // Convert pin if bangla
+        pin = toEng(pin);
 
         if (!name) { alert("দয়া করে নাম লিখুন"); return; }
         if (pin === MEMBER_PIN) { saveAndEnter(name, 'member'); }
@@ -442,14 +442,13 @@
         navigator.clipboard.writeText(text).then(() => showToast("নম্বর কপি হয়েছে!"));
     }
 
-    // --- Transactions (FIXED with Bangla Converter) ---
+    // --- Transactions ---
     window.submitDeposit = function() {
         let amount = document.getElementById('dep-amount').value;
         const method = document.getElementById('dep-method').value;
         let last3 = document.getElementById('dep-last3').value;
         const trx = document.getElementById('dep-trx').value;
 
-        // Convert to English Numbers
         amount = toEng(amount);
         last3 = toEng(last3);
 
@@ -471,8 +470,6 @@
     window.submitExpense = function() {
         const reason = document.getElementById('exp-reason').value;
         let amount = document.getElementById('exp-amount').value;
-        
-        // Convert to English
         amount = toEng(amount);
 
         if (!reason || !amount) { alert("সব তথ্য দিন"); return; }
@@ -492,15 +489,12 @@
     window.editBalance = function() {
         let newBal = prompt("নতুন ব্যালেন্স কত?");
         if (newBal === null || newBal === "") return;
-        
-        newBal = toEng(newBal); // Convert
+        newBal = toEng(newBal);
         newBal = parseFloat(newBal);
-        
         if (isNaN(newBal)) { alert("সঠিক সংখ্যা দিন!"); return; }
 
         let pin = prompt("এডমিন পিন (9999) দিন:");
         pin = toEng(pin);
-
         if (pin !== ADMIN_PIN) { alert("ভুল পিন!"); return; }
 
         let diff = newBal - currentBalanceVal;
@@ -516,7 +510,7 @@
         }).then(() => showToast("ব্যালেন্স আপডেট হয়েছে!"));
     }
 
-    // *** Load Data & Calculate ***
+    // *** DATA LOADING & CALCULATION (FIXED) ***
     function loadData() {
         db.ref('transactions').on('value', snapshot => {
             let totalIn = 0, totalOut = 0;
@@ -525,12 +519,16 @@
             snapshot.forEach(child => allItems.push({key: child.key, ...child.val()}));
 
             allItems.forEach(i => {
-                // Ensure Amount is Number & Handle Bangla Digits just in case
                 let amtStr = i.amount.toString();
                 let amt = parseFloat(toEng(amtStr)) || 0;
 
-                if(i.type === 'deposit') totalIn += amt;
-                else if(i.type === 'expense') totalOut += amt;
+                // FIX: Check explicitly for both types
+                if(i.type === 'deposit') {
+                    totalIn += amt;
+                } else {
+                    // expense or any subtraction
+                    totalOut += amt;
+                }
             });
 
             currentBalanceVal = totalIn - totalOut; 
@@ -538,7 +536,7 @@
             document.getElementById('total-in').innerText = totalIn.toLocaleString('bn-BD');
             document.getElementById('total-out').innerText = totalOut.toLocaleString('bn-BD');
 
-            // Render Last 50
+            // List Display (Last 50)
             const listEl = document.getElementById('list-all');
             listEl.innerHTML = '';
             const displayItems = allItems.reverse().slice(0, 50); 
