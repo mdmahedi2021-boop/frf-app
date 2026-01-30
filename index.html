@@ -10,7 +10,7 @@
     
     <style>
         :root {
-            --primary: #00897b; /* টিল গ্রিন */
+            --primary: #00897b;
             --primary-dark: #00695c;
             --bg: #f4f6f8;
             --white: #ffffff;
@@ -31,84 +31,81 @@
             overflow-x: hidden;
         }
 
-        /* অ্যাপ কন্টেইনার */
         .app-container {
-            max-width: 480px;
-            margin: 0 auto;
-            background: var(--white);
-            min-height: 100vh;
-            position: relative;
+            max-width: 480px; margin: 0 auto;
+            background: var(--white); min-height: 100vh;
+            position: relative; display: flex; flex-direction: column;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
-            display: flex; flex-direction: column;
         }
 
-        /* ১. প্রথমবার লগইন স্ক্রিন */
+        /* লগইন স্ক্রিন */
         #login-screen {
-            flex: 1;
-            display: flex; flex-direction: column;
+            flex: 1; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            padding: 30px;
+            padding: 30px; text-align: center;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            text-align: center;
         }
-        /* লোগো আইকন বাদ দেওয়া হয়েছে */
         .app-title { font-size: 42px; font-weight: 800; letter-spacing: 2px; margin: 0; }
         .sub-text { font-size: 14px; opacity: 0.8; margin-bottom: 40px; margin-top: 5px; font-weight: 300; text-transform: uppercase; letter-spacing: 1px; }
         
         .login-input {
-            width: 100%; padding: 15px;
-            font-size: 18px; border: none; border-radius: 12px;
-            text-align: center; margin-bottom: 15px;
-            background: rgba(255,255,255,0.95);
+            width: 100%; padding: 15px; font-size: 18px;
+            border: none; border-radius: 12px; text-align: center;
+            margin-bottom: 15px; background: rgba(255,255,255,0.95);
             font-family: 'Hind Siliguri', sans-serif;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .btn-primary {
-            width: 100%; padding: 15px;
-            background: var(--text); color: white;
-            border: none; border-radius: 12px;
+            width: 100%; padding: 15px; background: var(--text);
+            color: white; border: none; border-radius: 12px;
             font-size: 18px; font-weight: 600; cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            transition: 0.2s;
         }
-        .btn-primary:active { transform: scale(0.98); }
 
-        /* ২. ড্যাশবোর্ড */
+        /* ড্যাশবোর্ড */
         #dashboard-screen { display: none; background: var(--bg); padding-bottom: 80px; }
         
         .header {
             background: var(--primary); color: white;
             padding: 20px 20px 40px 20px;
             border-bottom-left-radius: 25px; border-bottom-right-radius: 25px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .user-name { font-size: 18px; font-weight: 600; }
-        .logout-btn { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; }
         
-        .balance-card { text-align: center; }
+        .balance-card { text-align: center; position: relative; }
         .balance-amount { font-size: 42px; font-weight: 700; }
         
-        /* স্ট্যাটাস কার্ড */
+        /* এডিট বাটন */
+        .edit-bal-btn {
+            font-size: 16px; color: rgba(255,255,255,0.7);
+            cursor: pointer; margin-left: 10px; vertical-align: middle;
+            display: none; /* শুধু এডমিন দেখবে */
+        }
+
         .stats-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
             padding: 0 20px; margin-top: -30px;
         }
         .stat-card {
-            background: white; padding: 15px;
-            border-radius: 15px; text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background: white; padding: 15px; border-radius: 15px;
+            text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
         .stat-val { font-size: 18px; font-weight: 700; }
-        
-        /* অ্যাকশন বাটন */
+
+        .pending-card {
+            background: #fff3e0; padding: 15px; margin: 20px 20px 0 20px;
+            border-radius: 12px; border: 1px solid #ffe0b2; display: none;
+        }
+        .pending-row { background: white; padding: 10px; border-radius: 8px; margin-top: 8px; border-left: 4px solid var(--pending); }
+        .p-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+        .btn-sm { border: none; padding: 5px 12px; border-radius: 5px; color: white; font-size: 12px; cursor: pointer; }
+
         .action-area { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .act-btn {
             background: white; border: none; padding: 15px;
             border-radius: 15px; display: flex; flex-direction: column;
-            align-items: center; cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            align-items: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .icon-box {
             width: 45px; height: 45px; border-radius: 50%;
@@ -116,64 +113,24 @@
             color: white; font-size: 20px; margin-bottom: 8px;
         }
 
-        /* ট্যাব সিস্টেম (অ্যাক্টিভিটি লগ) */
         .log-section { background: white; margin-top: 10px; min-height: 400px; border-top-left-radius: 25px; border-top-right-radius: 25px; padding: 20px; }
         .tabs { display: flex; border-bottom: 1px solid #eee; margin-bottom: 15px; }
         .tab { flex: 1; text-align: center; padding: 10px; color: #888; cursor: pointer; font-weight: 500; }
         .tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); font-weight: 700; }
         
         .list-container { max-height: 500px; overflow-y: auto; }
-        .log-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 0; border-bottom: 1px solid #f0f0f0;
-        }
+        .log-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
         .log-left { display: flex; align-items: center; gap: 10px; }
-        .log-icon {
-            width: 35px; height: 35px; border-radius: 50%; background: #e0f2f1;
-            color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 14px;
-        }
-        .log-details h4 { margin: 0; font-size: 15px; font-weight: 600; }
-        .log-details p { margin: 2px 0 0; font-size: 12px; color: #888; }
-        .amount-txt { font-weight: 700; font-size: 15px; }
-
-        /* এডমিন পেন্ডিং */
-        .pending-card {
-            background: #fff3e0; padding: 15px; margin: 20px 20px 0 20px;
-            border-radius: 12px; border: 1px solid #ffe0b2;
-            display: none; /* শুধু এডমিন দেখবে */
-        }
-        .pending-row { background: white; padding: 10px; border-radius: 8px; margin-top: 8px; border-left: 4px solid var(--pending); }
-        .p-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
-        .btn-sm { border: none; padding: 5px 12px; border-radius: 5px; color: white; font-size: 12px; cursor: pointer; }
-
-        /* মডাল */
-        .modal {
-            display: none; position: fixed; z-index: 100;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); align-items: center; justify-content: center;
-        }
-        .modal-content {
-            background: white; width: 90%; max-width: 400px;
-            padding: 25px; border-radius: 15px;
-            animation: popIn 0.3s;
-        }
-        @keyframes popIn { from {transform: scale(0.9);} to {transform: scale(1);} }
+        .log-icon { width: 35px; height: 35px; border-radius: 50%; background: #e0f2f1; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 14px; }
         
+        /* মডাল */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .modal-content { background: white; width: 90%; max-width: 400px; padding: 25px; border-radius: 15px; animation: popIn 0.3s; }
+        @keyframes popIn { from {transform: scale(0.9);} to {transform: scale(1);} }
         .form-label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; color: #555; }
-        .form-control {
-            width: 100%; padding: 12px; border: 1px solid #ddd;
-            border-radius: 8px; margin-bottom: 15px; font-size: 16px;
-            font-family: 'Hind Siliguri', sans-serif;
-        }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; font-size: 16px; font-family: 'Hind Siliguri', sans-serif; }
 
-        /* টোস্ট নোটিফিকেশন */
-        #toast {
-            visibility: hidden; min-width: 250px; background-color: #333; color: #fff;
-            text-align: center; border-radius: 50px; padding: 16px;
-            position: fixed; z-index: 999; left: 50%; bottom: 30px;
-            transform: translateX(-50%); box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            font-size: 14px; display: flex; align-items: center; gap: 10px;
-        }
+        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 16px; position: fixed; z-index: 999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
@@ -185,8 +142,9 @@
     
     <div id="login-screen">
         <h1 class="app-title">FRF</h1>
-        <p class="sub-text">FAMILY RESPONSIBLY FUND</p> <input type="password" id="input-pin" class="login-input" placeholder="আপনার পিন কোড দিন"> <input type="text" id="input-name" class="login-input" placeholder="আপনার নাম লিখুন">
-        
+        <p class="sub-text">FAMILY RESPONSIBLY FUND</p>
+        <input type="password" id="input-pin" class="login-input" placeholder="আপনার পিন কোড দিন">
+        <input type="text" id="input-name" class="login-input" placeholder="আপনার নাম লিখুন">
         <button class="btn-primary" onclick="firstTimeLogin()">সেভ করুন ও প্রবেশ করুন</button>
         <p style="font-size: 11px; margin-top: 20px; opacity: 0.7;">প্রথমবার নাম সেট করলে অ্যাপ মনে রাখবে</p>
     </div>
@@ -199,11 +157,15 @@
                     <span class="user-name" id="display-name">ব্যবহারকারী</span>
                     <span id="role-badge" style="font-size: 10px; background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 4px;">সদস্য</span>
                 </div>
-                <div class="logout-btn" onclick="logout()"><i class="fas fa-power-off"></i> বের হন</div>
+                <div style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;" onclick="logout()"><i class="fas fa-power-off"></i></div>
             </div>
             <div class="balance-card">
                 <div style="font-size: 13px; opacity: 0.9;">বর্তমান ফান্ড ব্যালেন্স</div>
-                <div><span style="font-size: 24px;">৳</span> <span class="balance-amount" id="balance">0</span></div>
+                <div>
+                    <span style="font-size: 24px;">৳</span> 
+                    <span class="balance-amount" id="balance">0</span>
+                    <i class="fas fa-pen edit-bal-btn" id="edit-balance-btn" onclick="editBalance()"></i>
+                </div>
             </div>
         </div>
 
@@ -220,8 +182,7 @@
 
         <div id="admin-pending-area" class="pending-card">
             <h4 style="margin: 0 0 10px 0; color: #e67e22; font-size: 14px;">অপেক্ষমান জমা (<span id="pending-count">0</span>)</h4>
-            <div id="pending-list">
-                </div>
+            <div id="pending-list"></div>
         </div>
 
         <div class="action-area">
@@ -240,14 +201,8 @@
                 <div class="tab active" onclick="switchTab('all')" id="tab-all">সকল লেনদেন</div>
                 <div class="tab" onclick="switchTab('rejected')" id="tab-rejected">বাতিল তালিকা</div>
             </div>
-
-            <div id="list-all" class="list-container">
-                <p style="text-align: center; color: #999; margin-top: 20px;">লোড হচ্ছে...</p>
-            </div>
-
-            <div id="list-rejected" class="list-container" style="display: none;">
-                <p style="text-align: center; color: #999; margin-top: 20px;">কোনো বাতিল তথ্য নেই</p>
-            </div>
+            <div id="list-all" class="list-container"><p style="text-align: center; color: #999; margin-top: 20px;">লোড হচ্ছে...</p></div>
+            <div id="list-rejected" class="list-container" style="display: none;"><p style="text-align: center; color: #999; margin-top: 20px;">নেই</p></div>
         </div>
     </div>
 
@@ -259,27 +214,16 @@
                 <h3 style="margin:0; color: var(--primary);">টাকা জমা দিন</h3>
                 <i class="fas fa-times" onclick="closeModal('deposit')" style="cursor: pointer; font-size: 20px;"></i>
             </div>
-            
-            <label class="form-label">আপনার নাম</label>
             <input type="text" id="dep-name" class="form-control" readonly style="background: #f0f0f0; color: #555;">
-            
-            <label class="form-label">টাকার পরিমাণ *</label>
-            <input type="number" id="dep-amount" class="form-control" placeholder="৳">
-            
-            <label class="form-label">জমার মাধ্যম</label>
+            <input type="number" id="dep-amount" class="form-control" placeholder="টাকার পরিমাণ (আবশ্যক)">
             <select id="dep-method" class="form-control">
                 <option value="বিকাশ (সেন্ড মানি)">বিকাশ (সেন্ড মানি)</option>
                 <option value="নগদ (সেন্ড মানি)">নগদ (সেন্ড মানি)</option>
                 <option value="রকেট (সেন্ড মানি)">রকেট (সেন্ড মানি)</option>
                 <option value="ব্যাংক ট্রান্সফার">ব্যাংক ট্রান্সফার</option>
             </select>
-            
-            <label class="form-label">নম্বরের শেষ ৩ ডিজিট *</label>
-            <input type="number" id="dep-last3" class="form-control" placeholder="যেমন: 890">
-            
-            <label class="form-label">ট্রানজেকশন আইডি (অপশনাল)</label>
-            <input type="text" id="dep-trx" class="form-control" placeholder="TrxID">
-
+            <input type="number" id="dep-last3" class="form-control" placeholder="নম্বরের শেষ ৩ ডিজিট (আবশ্যক)">
+            <input type="text" id="dep-trx" class="form-control" placeholder="TrxID (অপশনাল)">
             <button class="btn-primary" onclick="submitDeposit()">জমা অনুরোধ পাঠান</button>
         </div>
     </div>
@@ -287,17 +231,12 @@
     <div id="modal-expense" class="modal">
         <div class="modal-content">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="margin:0; color: var(--danger);">খরচের হিসাব (এডমিন)</h3>
+                <h3 style="margin:0; color: var(--danger);">খরচের হিসাব</h3>
                 <i class="fas fa-times" onclick="closeModal('expense')" style="cursor: pointer; font-size: 20px;"></i>
             </div>
-            
-            <label class="form-label">খরচের কারণ</label>
-            <input type="text" id="exp-reason" class="form-control" placeholder="যেমন: ঔষধ ক্রয়">
-            
-            <label class="form-label">টাকার পরিমাণ</label>
-            <input type="number" id="exp-amount" class="form-control" placeholder="৳">
-
-            <button class="btn-primary" style="background: var(--danger);" onclick="submitExpense()">খরচ নিশ্চিত করুন</button>
+            <input type="text" id="exp-reason" class="form-control" placeholder="খরচের কারণ">
+            <input type="number" id="exp-amount" class="form-control" placeholder="টাকার পরিমাণ">
+            <button class="btn-primary" style="background: var(--danger);" onclick="submitExpense()">নিশ্চিত করুন</button>
         </div>
     </div>
 
@@ -307,9 +246,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-    // ===========================================
-    // ১. ফায়ারবেস কনফিগারেশন (আপনার দেওয়া ডাটা)
-    // ===========================================
+    // আপনার দেওয়া কনফিগারেশন
     const firebaseConfig = {
       apiKey: "AIzaSyDJYDmNyk4tV0OgV3e-F28WSn6i7xLzaRQ",
       authDomain: "frf-app-e09c3.firebaseapp.com",
@@ -319,24 +256,21 @@
       appId: "1:743522057184:web:d7f08c4268406fb722c985"
     };
 
-    // ফায়ারবেস চালু করা
+    // Firebase Init Check
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
+    } else {
+        firebase.app(); // if already initialized, use that one
     }
     const db = firebase.database();
 
-    // ===========================================
-    // ২. অ্যাপের লজিক ও অথেন্টিকেশন
-    // ===========================================
     const MEMBER_PIN = "1234";
     const ADMIN_PIN = "9999"; 
 
-    // ইউজার ইনফো ভেরিয়েবল
     let currentUser = localStorage.getItem('frf_user_name');
-    let userRole = localStorage.getItem('frf_user_role'); // 'member' or 'admin'
-    let isInitialLoad = true;
+    let userRole = localStorage.getItem('frf_user_role');
+    let currentBalanceVal = 0; // বর্তমান ব্যালেন্স ট্র্যাক করার জন্য
 
-    // পেজ লোড হলে চেক করা
     window.onload = function() {
         if (currentUser && userRole) {
             enterDashboard();
@@ -345,19 +279,17 @@
         }
     };
 
-    // প্রথমবার লগইন ফাংশন
     function firstTimeLogin() {
         const pin = document.getElementById('input-pin').value;
         const name = document.getElementById('input-name').value;
-
-        if (!name) { alert("দয়া করে আপনার নাম লিখুন"); return; }
+        if (!name) { alert("দয়া করে নাম লিখুন"); return; }
 
         if (pin === MEMBER_PIN) {
             saveAndEnter(name, 'member');
         } else if (pin === ADMIN_PIN) {
             saveAndEnter(name, 'admin');
         } else {
-            alert("পিন কোড ভুল হয়েছে! (সদস্য: 1234, এডমিন: 9999)");
+            alert("ভুল পিন কোড!");
         }
     }
 
@@ -369,48 +301,42 @@
         enterDashboard();
     }
 
-    // ড্যাশবোর্ডে প্রবেশ
     function enterDashboard() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('dashboard-screen').style.display = 'block';
-
-        // নাম ও রোল সেট করা
         document.getElementById('display-name').innerText = currentUser;
-        document.getElementById('dep-name').value = currentUser; // অটোফিল নাম
-        
+        document.getElementById('dep-name').value = currentUser;
+
         if (userRole === 'admin') {
-            document.getElementById('role-badge').innerText = "এডমিন";
-            document.getElementById('role-badge').style.background = "#e74c3c";
-            document.getElementById('role-badge').style.color = "white";
+            const badge = document.getElementById('role-badge');
+            badge.innerText = "এডমিন"; badge.style.background = "#e74c3c"; badge.style.color = "white";
             document.getElementById('btn-expense').style.display = 'flex';
             document.getElementById('admin-pending-area').style.display = 'block';
-            loadPendingRequests(); // এডমিন হলে পেন্ডিং লিস্ট লোড হবে
+            document.getElementById('edit-balance-btn').style.display = 'inline-block'; // Edit btn show
+            loadPendingRequests();
         }
-
-        loadData(); // ডাটা লোড শুরু
+        loadData();
     }
 
-    // লগআউট
     function logout() {
-        if(confirm("আপনি কি বের হতে চান? বের হলে আবার পিন ও নাম দিতে হবে।")) {
+        if(confirm("আপনি কি লগআউট করতে চান?")) {
             localStorage.clear();
             location.reload();
         }
     }
 
-    // ===========================================
-    // ৩. ডাটা হ্যান্ডলিং (জমা ও খরচ)
-    // ===========================================
-    
-    // জমা সাবমিট
+    // --- জমা সাবমিট ফিক্স ---
     function submitDeposit() {
+        // বাটনে চাপলে কাজ হচ্ছে কিনা চেক
+        console.log("Deposit Button Clicked");
+
         const amount = document.getElementById('dep-amount').value;
         const method = document.getElementById('dep-method').value;
         const last3 = document.getElementById('dep-last3').value;
         const trx = document.getElementById('dep-trx').value;
 
         if (!amount || !last3) {
-            alert("টাকার পরিমাণ এবং শেষ ৩ ডিজিট আবশ্যক!");
+            alert("টাকার পরিমাণ এবং শেষ ৩ ডিজিট অবশ্যই দিতে হবে!");
             return;
         }
 
@@ -425,45 +351,75 @@
             dateStr: new Date().toLocaleDateString('bn-BD')
         };
 
-        db.ref('pending_requests').push(data).then(() => {
-            alert("আপনার জমার অনুরোধ পাঠানো হয়েছে! এডমিন অ্যাপ্রুভ করলে ব্যালেন্সে যোগ হবে।");
-            closeModal('deposit');
-            document.getElementById('dep-amount').value = '';
-            document.getElementById('dep-last3').value = '';
-            document.getElementById('dep-trx').value = '';
-        });
+        // Firebase Push
+        db.ref('pending_requests').push(data)
+            .then(() => {
+                showToast("অনুরোধ সফলভাবে পাঠানো হয়েছে!");
+                closeModal('deposit');
+                document.getElementById('dep-amount').value = '';
+                document.getElementById('dep-last3').value = '';
+                document.getElementById('dep-trx').value = '';
+            })
+            .catch((error) => {
+                alert("এরর: ডাটা পাঠানো যায়নি। ইন্টারনেট চেক করুন।\n" + error.message);
+                console.error("Firebase Error:", error);
+            });
     }
 
-    // খরচ সাবমিট (এডমিন)
     function submitExpense() {
         const reason = document.getElementById('exp-reason').value;
         const amount = document.getElementById('exp-amount').value;
-
         if (!reason || !amount) { alert("সব তথ্য দিন"); return; }
 
-        const data = {
-            type: 'expense',
-            name: reason, // খরচের কারণ দেখাবে নামের জায়গায়
-            user: currentUser, // কে এন্ট্রি দিল
+        db.ref('transactions').push({
+            type: 'expense', name: reason, user: currentUser,
             amount: parseFloat(amount),
             timestamp: firebase.database.ServerValue.TIMESTAMP,
             dateStr: new Date().toLocaleDateString('bn-BD')
-        };
-
-        db.ref('transactions').push(data).then(() => {
-            showToast("খরচ এন্ট্রি সফল হয়েছে!");
+        }).then(() => {
+            showToast("খরচ এন্ট্রি হয়েছে!");
             closeModal('expense');
             document.getElementById('exp-reason').value = '';
             document.getElementById('exp-amount').value = '';
         });
     }
 
-    // ===========================================
-    // ৪. ডাটা লোডিং ও রিয়েলটাইম আপডেট
-    // ===========================================
-    
+    // --- ব্যালেন্স এডিট ফিচার ---
+    function editBalance() {
+        let newBal = prompt("নতুন ব্যালেন্স কত হবে? (শুধুমাত্র সংখ্যা দিন)");
+        if (newBal === null || newBal === "") return;
+        
+        newBal = parseFloat(newBal);
+        if (isNaN(newBal)) { alert("সঠিক সংখ্যা দিন!"); return; }
+
+        let pin = prompt("কনফার্ম করতে এডমিন পিন (9999) দিন:");
+        if (pin !== ADMIN_PIN) {
+            alert("পিন ভুল! অ্যাক্সেস ডিনাইড।");
+            return;
+        }
+
+        // ব্যালেন্স এডজাস্টমেন্ট ক্যালকুলেশন
+        let diff = newBal - currentBalanceVal;
+        if (diff === 0) { alert("ব্যালেন্স একই আছে, পরিবর্তনের প্রয়োজন নেই।"); return; }
+
+        const type = diff > 0 ? 'deposit' : 'expense';
+        const adjustAmount = Math.abs(diff);
+
+        db.ref('transactions').push({
+            type: type,
+            name: "ব্যালেন্স সংশোধন (Admin)",
+            user: currentUser,
+            amount: adjustAmount,
+            method: "Manual Adjustment",
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            dateStr: new Date().toLocaleDateString('bn-BD')
+        }).then(() => {
+            showToast("ব্যালেন্স সফলভাবে আপডেট হয়েছে!");
+        });
+    }
+
+    // --- ডাটা লোড ---
     function loadData() {
-        // ১. ট্রানজেকশন (সফল) লোড
         db.ref('transactions').orderByChild('timestamp').limitToLast(50).on('value', snapshot => {
             const listEl = document.getElementById('list-all');
             listEl.innerHTML = '';
@@ -472,26 +428,18 @@
 
             snapshot.forEach(child => items.push({key: child.key, ...child.val()}));
             
-            // হিসাব নিকাশ (স্ন্যাপশট থেকে)
             items.forEach(i => {
                 if(i.type === 'deposit') totalIn += i.amount;
                 else totalOut += i.amount;
             });
 
-            // UI আপডেট
-            document.getElementById('balance').innerText = (totalIn - totalOut).toLocaleString('bn-BD');
+            currentBalanceVal = totalIn - totalOut; // গ্লোবাল ভেরিয়েবলে আপডেট
+            document.getElementById('balance').innerText = currentBalanceVal.toLocaleString('bn-BD');
             document.getElementById('total-in').innerText = totalIn.toLocaleString('bn-BD');
             document.getElementById('total-out').innerText = totalOut.toLocaleString('bn-BD');
 
-            // লিস্ট রেন্ডার (নতুন আগে)
             items.reverse().forEach(item => {
                 const isDeposit = item.type === 'deposit';
-                
-                // নোটিফিকেশন লজিক (নতুন ডাটা আসলে)
-                if(!isInitialLoad && (Date.now() - item.timestamp < 10000)) {
-                    showToast(isDeposit ? `নতুন জমা: ৳${item.amount}` : `নতুন খরচ: ৳${item.amount}`);
-                }
-
                 const html = `
                     <div class="log-item">
                         <div class="log-left">
@@ -500,7 +448,7 @@
                             </div>
                             <div class="log-details">
                                 <h4>${item.name}</h4>
-                                <p>${item.dateStr} | ${item.method || 'অফিসিয়াল খরচ'}</p>
+                                <p>${item.dateStr} | ${item.method || 'অফিসিয়াল'}</p>
                             </div>
                         </div>
                         <div class="amount-txt" style="color:${isDeposit ? 'var(--success)' : 'var(--danger)'}">
@@ -510,28 +458,24 @@
                 `;
                 listEl.innerHTML += html;
             });
-            
-            // ইনিশিয়াল লোড ফ্ল্যাগ বন্ধ করা (২ সেকেন্ড পর)
-            setTimeout(() => { isInitialLoad = false; }, 2000);
         });
 
-        // ২. বাতিল লিস্ট লোড
         db.ref('rejected_requests').orderByChild('timestamp').limitToLast(20).on('value', snapshot => {
             const rejListEl = document.getElementById('list-rejected');
             rejListEl.innerHTML = '';
-            let hasData = false;
-
-            const items = [];
+            let items = [];
             snapshot.forEach(child => items.push(child.val()));
             
+            if(items.length === 0) {
+                rejListEl.innerHTML = '<p style="text-align: center; color: #999; margin-top: 20px;">নেই</p>';
+                return;
+            }
+
             items.reverse().forEach(item => {
-                hasData = true;
                 const html = `
                     <div class="log-item" style="opacity: 0.7;">
                         <div class="log-left">
-                            <div class="log-icon" style="background:#eee; color:#666;">
-                                <i class="fas fa-times"></i>
-                            </div>
+                            <div class="log-icon" style="background:#eee; color:#666;"><i class="fas fa-times"></i></div>
                             <div class="log-details">
                                 <h4>${item.name} (বাতিল)</h4>
                                 <p>${item.dateStr} | কারণ: ${item.reason || 'অজানা'}</p>
@@ -542,11 +486,9 @@
                 `;
                 rejListEl.innerHTML += html;
             });
-            if(!hasData) rejListEl.innerHTML = '<p style="text-align: center; color: #999; margin-top: 20px;">কোনো বাতিল তথ্য নেই</p>';
         });
     }
 
-    // এডমিন: পেন্ডিং রিকোয়েস্ট লোড
     function loadPendingRequests() {
         db.ref('pending_requests').on('value', snapshot => {
             const pList = document.getElementById('pending-list');
@@ -558,14 +500,13 @@
                 count++;
                 const item = child.val();
                 const key = child.key;
-                
                 const html = `
                     <div class="pending-row">
                         <div style="font-weight:600; font-size:15px;">
                             ${item.name} <span style="float:right; color:var(--primary);">৳${item.amount}</span>
                         </div>
                         <div style="font-size:12px; color:#666; margin-top:4px;">
-                            ${item.method} | শেষ ৩ ডিজিট: ${item.last3} <br> Trx: ${item.trxId}
+                            ${item.method} | শেষ ৩: ${item.last3}
                         </div>
                         <div class="p-actions">
                             <button class="btn-sm" style="background:var(--danger);" onclick="rejectReq('${key}', '${item.name}', ${item.amount})">বাতিল</button>
@@ -580,25 +521,15 @@
         });
     }
 
-    // ===========================================
-    // ৫. এডমিন অ্যাকশন (গ্রহণ / বাতিল)
-    // ===========================================
-    
-    // গ্রহণ (Approve)
     window.approveReq = function(key) {
         if(!confirm("নিশ্চিত জমা করবেন?")) return;
-        
         db.ref('pending_requests/' + key).once('value').then(snap => {
             const data = snap.val();
             const verifiedData = {
-                type: 'deposit',
-                name: data.name,
-                amount: data.amount,
-                method: data.method,
-                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                type: 'deposit', name: data.name, amount: data.amount,
+                method: data.method, timestamp: firebase.database.ServerValue.TIMESTAMP,
                 dateStr: new Date().toLocaleDateString('bn-BD')
             };
-
             const updates = {};
             updates['/transactions/' + Date.now()] = verifiedData;
             updates['/pending_requests/' + key] = null;
@@ -606,38 +537,29 @@
         }).then(() => showToast("জমা গ্রহণ করা হয়েছে!"));
     };
 
-    // বাতিল (Reject)
     window.rejectReq = function(key, name, amount) {
-        const reason = prompt("বাতিলের কারণ লিখুন (যেমন: টাকা আসেনি):", "যাচাইকরণে ব্যর্থ");
-        if(reason === null) return; // Cancel pressed
-
+        const reason = prompt("বাতিলের কারণ লিখুন:", "যাচাইকরণে ব্যর্থ");
+        if(reason === null) return;
         db.ref('pending_requests/' + key).once('value').then(snap => {
             const data = snap.val();
             const rejectedData = {
-                name: data.name,
-                amount: data.amount,
-                reason: reason,
+                name: data.name, amount: data.amount, reason: reason,
                 timestamp: firebase.database.ServerValue.TIMESTAMP,
                 dateStr: new Date().toLocaleDateString('bn-BD')
             };
-
             const updates = {};
             updates['/rejected_requests/' + Date.now()] = rejectedData;
             updates['/pending_requests/' + key] = null;
             return db.ref().update(updates);
-        }).then(() => showToast("অনুরোধটি বাতিল তালিকায় পাঠানো হয়েছে"));
+        }).then(() => showToast("বাতিল করা হয়েছে"));
     };
 
-    // ===========================================
-    // ৬. ইউটিলিটি (মডাল, ট্যাব, টোস্ট)
-    // ===========================================
     function openModal(id) { document.getElementById('modal-'+id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
     
     function switchTab(tab) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.list-container').forEach(l => l.style.display = 'none');
-        
         document.getElementById('tab-'+tab).classList.add('active');
         document.getElementById('list-'+tab).style.display = 'block';
     }
@@ -648,7 +570,6 @@
         t.className = "show";
         setTimeout(() => { t.className = t.className.replace("show", ""); }, 3000);
     }
-
 </script>
 
 </body>
