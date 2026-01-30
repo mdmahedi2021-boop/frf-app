@@ -18,6 +18,9 @@
             --danger: #e74c3c;
             --pending: #f39c12;
             --success: #27ae60;
+            --bkash: #e2136e;
+            --nagad: #f1592a;
+            --rocket: #8c3494;
         }
 
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -76,11 +79,10 @@
         .balance-card { text-align: center; position: relative; }
         .balance-amount { font-size: 42px; font-weight: 700; }
         
-        /* এডিট বাটন */
         .edit-bal-btn {
             font-size: 16px; color: rgba(255,255,255,0.7);
             cursor: pointer; margin-left: 10px; vertical-align: middle;
-            display: none; /* শুধু এডমিন দেখবে */
+            display: none; /* শুধু এডমিন */
         }
 
         .stats-grid {
@@ -123,9 +125,20 @@
         .log-left { display: flex; align-items: center; gap: 10px; }
         .log-icon { width: 35px; height: 35px; border-radius: 50%; background: #e0f2f1; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 14px; }
         
+        /* Payment Methods Display */
+        .pay-card {
+            background: #f8f9fa; padding: 10px; border-radius: 8px;
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid #eee;
+        }
+        .pay-info { display: flex; flex-direction: column; }
+        .pay-provider { font-weight: 700; font-size: 14px; text-transform: capitalize; }
+        .pay-number { font-size: 13px; color: #555; margin-top: 2px; }
+        .copy-btn { color: var(--primary); cursor: pointer; padding: 5px; font-size: 14px; }
+        
         /* মডাল */
         .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
-        .modal-content { background: white; width: 90%; max-width: 400px; padding: 25px; border-radius: 15px; animation: popIn 0.3s; }
+        .modal-content { background: white; width: 90%; max-width: 400px; padding: 25px; border-radius: 15px; animation: popIn 0.3s; max-height: 85vh; overflow-y: auto; }
         @keyframes popIn { from {transform: scale(0.9);} to {transform: scale(1);} }
         .form-label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; color: #555; }
         .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; font-size: 16px; font-family: 'Hind Siliguri', sans-serif; }
@@ -194,6 +207,10 @@
                 <div class="icon-box" style="background: var(--danger);"><i class="fas fa-minus"></i></div>
                 <span style="font-weight: 600; font-size: 14px;">খরচ এন্ট্রি</span>
             </button>
+            <button class="act-btn" id="btn-settings" onclick="openModal('settings')" style="display: none;">
+                <div class="icon-box" style="background: #34495e;"><i class="fas fa-cog"></i></div>
+                <span style="font-weight: 600; font-size: 14px;">সেটিংস</span>
+            </button>
         </div>
 
         <div class="log-section">
@@ -214,6 +231,14 @@
                 <h3 style="margin:0; color: var(--primary);">টাকা জমা দিন</h3>
                 <i class="fas fa-times" onclick="closeModal('deposit')" style="cursor: pointer; font-size: 20px;"></i>
             </div>
+            
+            <div style="background: #eef2f3; padding: 10px; border-radius: 10px; margin-bottom: 20px;">
+                <h5 style="margin:0 0 10px 0; font-size: 13px; color: #666;">টাকা পাঠানোর নম্বরসমূহ:</h5>
+                <div id="active-payment-methods">
+                    <p style="font-size:12px; color:#999; text-align:center;">লোড হচ্ছে...</p>
+                </div>
+            </div>
+
             <input type="text" id="dep-name" class="form-control" readonly style="background: #f0f0f0; color: #555;">
             <input type="number" id="dep-amount" class="form-control" placeholder="টাকার পরিমাণ (আবশ্যক)">
             <select id="dep-method" class="form-control">
@@ -240,17 +265,42 @@
         </div>
     </div>
 
+    <div id="modal-settings" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin:0; color: #34495e;">পেমেন্ট সেটিংস</h3>
+                <i class="fas fa-times" onclick="closeModal('settings')" style="cursor: pointer; font-size: 20px;"></i>
+            </div>
+            
+            <label class="form-label">নতুন নম্বর যুক্ত করুন</label>
+            <select id="set-provider" class="form-control">
+                <option value="Bkash">বিকাশ</option>
+                <option value="Nagad">নগদ</option>
+                <option value="Rocket">রকেট</option>
+                <option value="Bank">ব্যাংক</option>
+            </select>
+            <input type="text" id="set-type" class="form-control" placeholder="ওয়ালেট টাইপ (যেমন: Personal / Agent)">
+            <input type="text" id="set-number" class="form-control" placeholder="মোবাইল/একাউন্ট নম্বর">
+            
+            <button class="btn-primary" onclick="addPaymentMethod()" style="background: #34495e;">যুক্ত করুন</button>
+            
+            <div style="margin-top: 25px;">
+                <h5 style="margin: 0 0 10px 0; color: #666;">বর্তমান নম্বর তালিকা:</h5>
+                <div id="admin-payment-list"></div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-    // আপনার দেওয়া সঠিক কনফিগারেশন (databaseURL সহ)
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDJYDmNyk4tV0OgV3e-F28WSn6i7xLzaRQ",
       authDomain: "frf-app-e09c3.firebaseapp.com",
-      // এই লাইনটি আগে মিসিং ছিল, এখন ঠিক আছে
       databaseURL: "https://frf-app-e09c3-default-rtdb.firebaseio.com",
       projectId: "frf-app-e09c3",
       storageBucket: "frf-app-e09c3.firebasestorage.app",
@@ -258,7 +308,6 @@
       appId: "1:743522057184:web:d7f08c4268406fb722c985"
     };
 
-    // Firebase Init
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
@@ -311,11 +360,13 @@
             const badge = document.getElementById('role-badge');
             badge.innerText = "এডমিন"; badge.style.background = "#e74c3c"; badge.style.color = "white";
             document.getElementById('btn-expense').style.display = 'flex';
+            document.getElementById('btn-settings').style.display = 'flex'; // Settings button
             document.getElementById('admin-pending-area').style.display = 'block';
             document.getElementById('edit-balance-btn').style.display = 'inline-block';
             loadPendingRequests();
         }
         loadData();
+        loadPaymentMethods(); // Load numbers
     }
 
     window.logout = function() {
@@ -325,11 +376,87 @@
         }
     }
 
-    // --- জমা সাবমিট (সংশোধিত) ---
-    window.submitDeposit = function() {
-        // বাটনে চাপলে এটা আসবে
-        alert("প্রসেসিং হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন");
+    // --- Payment Methods Logic ---
+    function loadPaymentMethods() {
+        db.ref('payment_methods').on('value', snapshot => {
+            const adminList = document.getElementById('admin-payment-list');
+            const userList = document.getElementById('active-payment-methods');
+            adminList.innerHTML = '';
+            userList.innerHTML = '';
+            let hasData = false;
 
+            snapshot.forEach(child => {
+                hasData = true;
+                const item = child.val();
+                const key = child.key;
+                
+                let color = '#333';
+                if(item.provider === 'Bkash') color = 'var(--bkash)';
+                if(item.provider === 'Nagad') color = 'var(--nagad)';
+                if(item.provider === 'Rocket') color = 'var(--rocket)';
+
+                // Admin View
+                adminList.innerHTML += `
+                    <div class="pay-card">
+                        <div class="pay-info">
+                            <span class="pay-provider" style="color:${color}">${item.provider} (${item.type})</span>
+                            <span class="pay-number">${item.number}</span>
+                        </div>
+                        <i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deletePaymentMethod('${key}')"></i>
+                    </div>
+                `;
+
+                // User View
+                userList.innerHTML += `
+                    <div class="pay-card">
+                        <div class="pay-info">
+                            <span class="pay-provider" style="color:${color}">${item.provider} (${item.type})</span>
+                            <span class="pay-number">${item.number}</span>
+                        </div>
+                        <i class="fas fa-copy copy-btn" onclick="copyToClipboard('${item.number}')"></i>
+                    </div>
+                `;
+            });
+
+            if(!hasData) {
+                userList.innerHTML = '<p style="font-size:12px; color:#999; text-align:center;">কোনো নম্বর যুক্ত করা হয়নি।</p>';
+                adminList.innerHTML = '<p style="font-size:12px; color:#999; text-align:center;">কোনো নম্বর নেই।</p>';
+            }
+        });
+    }
+
+    window.addPaymentMethod = function() {
+        const provider = document.getElementById('set-provider').value;
+        const type = document.getElementById('set-type').value;
+        const number = document.getElementById('set-number').value;
+
+        if(!type || !number) { alert("সব তথ্য দিন!"); return; }
+
+        db.ref('payment_methods').push({
+            provider: provider,
+            type: type,
+            number: number
+        }).then(() => {
+            showToast("নম্বর যুক্ত হয়েছে!");
+            document.getElementById('set-type').value = '';
+            document.getElementById('set-number').value = '';
+        });
+    }
+
+    window.deletePaymentMethod = function(key) {
+        if(confirm("এই নম্বরটি মুছে ফেলতে চান?")) {
+            db.ref('payment_methods/' + key).remove();
+        }
+    }
+
+    window.copyToClipboard = function(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast("নম্বর কপি হয়েছে!");
+        });
+    }
+
+    // --- Main Functions ---
+    window.submitDeposit = function() {
         const amount = document.getElementById('dep-amount').value;
         const method = document.getElementById('dep-method').value;
         const last3 = document.getElementById('dep-last3').value;
@@ -360,7 +487,7 @@
                 document.getElementById('dep-trx').value = '';
             })
             .catch((error) => {
-                alert("ব্যর্থ! ডাটাবেসে সেভ হয়নি। কারণ: " + error.message);
+                alert("ব্যর্থ! ডাটাবেসে সেভ হয়নি।");
                 console.error(error);
             });
     }
@@ -425,8 +552,12 @@
             snapshot.forEach(child => items.push({key: child.key, ...child.val()}));
             
             items.forEach(i => {
-                if(i.type === 'deposit') totalIn += i.amount;
-                else totalOut += i.amount;
+                let amt = parseFloat(i.amount) || 0;
+                if(i.type === 'deposit') {
+                    totalIn += amt;
+                } else if (i.type === 'expense') {
+                    totalOut += amt;
+                }
             });
 
             currentBalanceVal = totalIn - totalOut; 
