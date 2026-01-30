@@ -125,7 +125,7 @@
         .log-left { display: flex; align-items: center; gap: 10px; }
         .log-icon { width: 35px; height: 35px; border-radius: 50%; background: #e0f2f1; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 14px; }
         
-        /* Payment Methods Display */
+        /* Payment Methods */
         .pay-card {
             background: #f8f9fa; padding: 10px; border-radius: 8px;
             margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
@@ -231,23 +231,21 @@
                 <h3 style="margin:0; color: var(--primary);">টাকা জমা দিন</h3>
                 <i class="fas fa-times" onclick="closeModal('deposit')" style="cursor: pointer; font-size: 20px;"></i>
             </div>
-            
             <div style="background: #eef2f3; padding: 10px; border-radius: 10px; margin-bottom: 20px;">
                 <h5 style="margin:0 0 10px 0; font-size: 13px; color: #666;">টাকা পাঠানোর নম্বরসমূহ:</h5>
                 <div id="active-payment-methods">
                     <p style="font-size:12px; color:#999; text-align:center;">লোড হচ্ছে...</p>
                 </div>
             </div>
-
             <input type="text" id="dep-name" class="form-control" readonly style="background: #f0f0f0; color: #555;">
-            <input type="number" id="dep-amount" class="form-control" placeholder="টাকার পরিমাণ (আবশ্যক)">
+            <input type="text" id="dep-amount" class="form-control" placeholder="টাকার পরিমাণ (আবশ্যক)">
             <select id="dep-method" class="form-control">
                 <option value="বিকাশ (সেন্ড মানি)">বিকাশ (সেন্ড মানি)</option>
                 <option value="নগদ (সেন্ড মানি)">নগদ (সেন্ড মানি)</option>
                 <option value="রকেট (সেন্ড মানি)">রকেট (সেন্ড মানি)</option>
                 <option value="ব্যাংক ট্রান্সফার">ব্যাংক ট্রান্সফার</option>
             </select>
-            <input type="number" id="dep-last3" class="form-control" placeholder="নম্বরের শেষ ৩ ডিজিট (আবশ্যক)">
+            <input type="text" id="dep-last3" class="form-control" placeholder="নম্বরের শেষ ৩ ডিজিট (আবশ্যক)">
             <input type="text" id="dep-trx" class="form-control" placeholder="TrxID (অপশনাল)">
             <button class="btn-primary" onclick="submitDeposit()">জমা অনুরোধ পাঠান</button>
         </div>
@@ -260,7 +258,7 @@
                 <i class="fas fa-times" onclick="closeModal('expense')" style="cursor: pointer; font-size: 20px;"></i>
             </div>
             <input type="text" id="exp-reason" class="form-control" placeholder="খরচের কারণ">
-            <input type="number" id="exp-amount" class="form-control" placeholder="টাকার পরিমাণ">
+            <input type="text" id="exp-amount" class="form-control" placeholder="টাকার পরিমাণ">
             <button class="btn-primary" style="background: var(--danger);" onclick="submitExpense()">নিশ্চিত করুন</button>
         </div>
     </div>
@@ -271,7 +269,6 @@
                 <h3 style="margin:0; color: #34495e;">পেমেন্ট সেটিংস</h3>
                 <i class="fas fa-times" onclick="closeModal('settings')" style="cursor: pointer; font-size: 20px;"></i>
             </div>
-            
             <label class="form-label">নতুন নম্বর যুক্ত করুন</label>
             <select id="set-provider" class="form-control">
                 <option value="Bkash">বিকাশ</option>
@@ -281,9 +278,7 @@
             </select>
             <input type="text" id="set-type" class="form-control" placeholder="ওয়ালেট টাইপ (যেমন: Personal / Agent)">
             <input type="text" id="set-number" class="form-control" placeholder="মোবাইল/একাউন্ট নম্বর">
-            
             <button class="btn-primary" onclick="addPaymentMethod()" style="background: #34495e;">যুক্ত করুন</button>
-            
             <div style="margin-top: 25px;">
                 <h5 style="margin: 0 0 10px 0; color: #666;">বর্তমান নম্বর তালিকা:</h5>
                 <div id="admin-payment-list"></div>
@@ -320,6 +315,12 @@
     let userRole = localStorage.getItem('frf_user_role');
     let currentBalanceVal = 0; 
 
+    // --- HELPER: CONVERT BANGLA NUMBER TO ENGLISH ---
+    function toEng(str) {
+        if(!str) return "";
+        return str.toString().replace(/[০-৯]/g, d => "0123456789"["০১২৩৪৫৬৭৮৯".indexOf(d)]);
+    }
+
     window.onload = function() {
         if (currentUser && userRole) {
             enterDashboard();
@@ -329,17 +330,15 @@
     };
 
     window.firstTimeLogin = function() {
-        const pin = document.getElementById('input-pin').value;
+        let pin = document.getElementById('input-pin').value;
         const name = document.getElementById('input-name').value;
-        if (!name) { alert("দয়া করে নাম লিখুন"); return; }
+        
+        pin = toEng(pin); // Convert pin if bangla
 
-        if (pin === MEMBER_PIN) {
-            saveAndEnter(name, 'member');
-        } else if (pin === ADMIN_PIN) {
-            saveAndEnter(name, 'admin');
-        } else {
-            alert("ভুল পিন কোড!");
-        }
+        if (!name) { alert("দয়া করে নাম লিখুন"); return; }
+        if (pin === MEMBER_PIN) { saveAndEnter(name, 'member'); }
+        else if (pin === ADMIN_PIN) { saveAndEnter(name, 'admin'); }
+        else { alert("ভুল পিন কোড!"); }
     }
 
     function saveAndEnter(name, role) {
@@ -360,23 +359,23 @@
             const badge = document.getElementById('role-badge');
             badge.innerText = "এডমিন"; badge.style.background = "#e74c3c"; badge.style.color = "white";
             document.getElementById('btn-expense').style.display = 'flex';
-            document.getElementById('btn-settings').style.display = 'flex'; // Settings button
+            document.getElementById('btn-settings').style.display = 'flex';
             document.getElementById('admin-pending-area').style.display = 'block';
             document.getElementById('edit-balance-btn').style.display = 'inline-block';
             loadPendingRequests();
         }
         loadData();
-        loadPaymentMethods(); // Load numbers
+        loadPaymentMethods();
     }
 
     window.logout = function() {
-        if(confirm("আপনি কি লগআউট করতে চান?")) {
+        if(confirm("লগআউট করতে চান?")) {
             localStorage.clear();
             location.reload();
         }
     }
 
-    // --- Payment Methods Logic ---
+    // --- Payment Methods ---
     function loadPaymentMethods() {
         db.ref('payment_methods').on('value', snapshot => {
             const adminList = document.getElementById('admin-payment-list');
@@ -395,7 +394,6 @@
                 if(item.provider === 'Nagad') color = 'var(--nagad)';
                 if(item.provider === 'Rocket') color = 'var(--rocket)';
 
-                // Admin View
                 adminList.innerHTML += `
                     <div class="pay-card">
                         <div class="pay-info">
@@ -405,8 +403,6 @@
                         <i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deletePaymentMethod('${key}')"></i>
                     </div>
                 `;
-
-                // User View
                 userList.innerHTML += `
                     <div class="pay-card">
                         <div class="pay-info">
@@ -417,10 +413,9 @@
                     </div>
                 `;
             });
-
             if(!hasData) {
-                userList.innerHTML = '<p style="font-size:12px; color:#999; text-align:center;">কোনো নম্বর যুক্ত করা হয়নি।</p>';
-                adminList.innerHTML = '<p style="font-size:12px; color:#999; text-align:center;">কোনো নম্বর নেই।</p>';
+                userList.innerHTML = '<p style="font-size:12px; color:#999; text-align:center;">কোনো নম্বর নেই</p>';
+                adminList.innerHTML = '<p style="font-size:12px; color:#999; text-align:center;">কোনো নম্বর নেই</p>';
             }
         });
     }
@@ -429,13 +424,10 @@
         const provider = document.getElementById('set-provider').value;
         const type = document.getElementById('set-type').value;
         const number = document.getElementById('set-number').value;
-
         if(!type || !number) { alert("সব তথ্য দিন!"); return; }
 
         db.ref('payment_methods').push({
-            provider: provider,
-            type: type,
-            number: number
+            provider: provider, type: type, number: number
         }).then(() => {
             showToast("নম্বর যুক্ত হয়েছে!");
             document.getElementById('set-type').value = '';
@@ -444,57 +436,45 @@
     }
 
     window.deletePaymentMethod = function(key) {
-        if(confirm("এই নম্বরটি মুছে ফেলতে চান?")) {
-            db.ref('payment_methods/' + key).remove();
-        }
+        if(confirm("মুছে ফেলতে চান?")) db.ref('payment_methods/' + key).remove();
     }
-
     window.copyToClipboard = function(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            showToast("নম্বর কপি হয়েছে!");
-        });
+        navigator.clipboard.writeText(text).then(() => showToast("নম্বর কপি হয়েছে!"));
     }
 
-    // --- Main Functions ---
+    // --- Transactions (FIXED with Bangla Converter) ---
     window.submitDeposit = function() {
-        const amount = document.getElementById('dep-amount').value;
+        let amount = document.getElementById('dep-amount').value;
         const method = document.getElementById('dep-method').value;
-        const last3 = document.getElementById('dep-last3').value;
+        let last3 = document.getElementById('dep-last3').value;
         const trx = document.getElementById('dep-trx').value;
 
-        if (!amount || !last3) {
-            alert("ভুল: টাকার পরিমাণ এবং শেষ ৩ ডিজিট অবশ্যই পূরণ করতে হবে।");
-            return;
-        }
+        // Convert to English Numbers
+        amount = toEng(amount);
+        last3 = toEng(last3);
 
-        const data = {
-            name: currentUser,
-            amount: parseFloat(amount),
-            method: method,
-            last3: last3,
-            trxId: trx || "N/A",
-            status: "pending",
-            timestamp: firebase.database.ServerValue.TIMESTAMP,
+        if (!amount || !last3) { alert("টাকা ও শেষ ৩ ডিজিট দিন!"); return; }
+
+        db.ref('pending_requests').push({
+            name: currentUser, amount: parseFloat(amount),
+            method: method, last3: last3, trxId: trx || "N/A",
+            status: "pending", timestamp: firebase.database.ServerValue.TIMESTAMP,
             dateStr: new Date().toLocaleDateString('bn-BD')
-        };
-
-        db.ref('pending_requests').push(data)
-            .then(() => {
-                alert("সফল! জমা অনুরোধ পাঠানো হয়েছে।");
-                closeModal('deposit');
-                document.getElementById('dep-amount').value = '';
-                document.getElementById('dep-last3').value = '';
-                document.getElementById('dep-trx').value = '';
-            })
-            .catch((error) => {
-                alert("ব্যর্থ! ডাটাবেসে সেভ হয়নি।");
-                console.error(error);
-            });
+        }).then(() => {
+            alert("অনুরোধ পাঠানো হয়েছে!"); closeModal('deposit');
+            document.getElementById('dep-amount').value = '';
+            document.getElementById('dep-last3').value = '';
+            document.getElementById('dep-trx').value = '';
+        }).catch(err => alert("Failed: " + err.message));
     }
 
     window.submitExpense = function() {
         const reason = document.getElementById('exp-reason').value;
-        const amount = document.getElementById('exp-amount').value;
+        let amount = document.getElementById('exp-amount').value;
+        
+        // Convert to English
+        amount = toEng(amount);
+
         if (!reason || !amount) { alert("সব তথ্য দিন"); return; }
 
         db.ref('transactions').push({
@@ -503,61 +483,54 @@
             timestamp: firebase.database.ServerValue.TIMESTAMP,
             dateStr: new Date().toLocaleDateString('bn-BD')
         }).then(() => {
-            showToast("খরচ এন্ট্রি হয়েছে!");
-            closeModal('expense');
+            showToast("খরচ এন্ট্রি হয়েছে!"); closeModal('expense');
             document.getElementById('exp-reason').value = '';
             document.getElementById('exp-amount').value = '';
         }).catch(err => alert(err.message));
     }
 
     window.editBalance = function() {
-        let newBal = prompt("নতুন ব্যালেন্স কত হবে? (শুধুমাত্র সংখ্যা দিন)");
+        let newBal = prompt("নতুন ব্যালেন্স কত?");
         if (newBal === null || newBal === "") return;
         
+        newBal = toEng(newBal); // Convert
         newBal = parseFloat(newBal);
+        
         if (isNaN(newBal)) { alert("সঠিক সংখ্যা দিন!"); return; }
 
-        let pin = prompt("কনফার্ম করতে এডমিন পিন (9999) দিন:");
-        if (pin !== ADMIN_PIN) {
-            alert("পিন ভুল! অ্যাক্সেস ডিনাইড।");
-            return;
-        }
+        let pin = prompt("এডমিন পিন (9999) দিন:");
+        pin = toEng(pin);
+
+        if (pin !== ADMIN_PIN) { alert("ভুল পিন!"); return; }
 
         let diff = newBal - currentBalanceVal;
-        if (diff === 0) { alert("ব্যালেন্স একই আছে, পরিবর্তনের প্রয়োজন নেই।"); return; }
+        if (diff === 0) { alert("পরিবর্তন নেই"); return; }
 
         const type = diff > 0 ? 'deposit' : 'expense';
-        const adjustAmount = Math.abs(diff);
-
         db.ref('transactions').push({
-            type: type,
-            name: "ব্যালেন্স সংশোধন (Admin)",
-            user: currentUser,
-            amount: adjustAmount,
+            type: type, name: "ব্যালেন্স সংশোধন (Admin)",
+            user: currentUser, amount: Math.abs(diff),
             method: "Manual Adjustment",
             timestamp: firebase.database.ServerValue.TIMESTAMP,
             dateStr: new Date().toLocaleDateString('bn-BD')
-        }).then(() => {
-            showToast("ব্যালেন্স সফলভাবে আপডেট হয়েছে!");
-        });
+        }).then(() => showToast("ব্যালেন্স আপডেট হয়েছে!"));
     }
 
+    // *** Load Data & Calculate ***
     function loadData() {
-        db.ref('transactions').orderByChild('timestamp').limitToLast(50).on('value', snapshot => {
-            const listEl = document.getElementById('list-all');
-            listEl.innerHTML = '';
+        db.ref('transactions').on('value', snapshot => {
             let totalIn = 0, totalOut = 0;
-            let items = [];
+            let allItems = [];
 
-            snapshot.forEach(child => items.push({key: child.key, ...child.val()}));
-            
-            items.forEach(i => {
-                let amt = parseFloat(i.amount) || 0;
-                if(i.type === 'deposit') {
-                    totalIn += amt;
-                } else if (i.type === 'expense') {
-                    totalOut += amt;
-                }
+            snapshot.forEach(child => allItems.push({key: child.key, ...child.val()}));
+
+            allItems.forEach(i => {
+                // Ensure Amount is Number & Handle Bangla Digits just in case
+                let amtStr = i.amount.toString();
+                let amt = parseFloat(toEng(amtStr)) || 0;
+
+                if(i.type === 'deposit') totalIn += amt;
+                else if(i.type === 'expense') totalOut += amt;
             });
 
             currentBalanceVal = totalIn - totalOut; 
@@ -565,7 +538,12 @@
             document.getElementById('total-in').innerText = totalIn.toLocaleString('bn-BD');
             document.getElementById('total-out').innerText = totalOut.toLocaleString('bn-BD');
 
-            items.reverse().forEach(item => {
+            // Render Last 50
+            const listEl = document.getElementById('list-all');
+            listEl.innerHTML = '';
+            const displayItems = allItems.reverse().slice(0, 50); 
+            
+            displayItems.forEach(item => {
                 const isDeposit = item.type === 'deposit';
                 const html = `
                     <div class="log-item">
@@ -587,6 +565,7 @@
             });
         });
 
+        // Rejected List
         db.ref('rejected_requests').orderByChild('timestamp').limitToLast(20).on('value', snapshot => {
             const rejListEl = document.getElementById('list-rejected');
             rejListEl.innerHTML = '';
@@ -597,7 +576,6 @@
                 rejListEl.innerHTML = '<p style="text-align: center; color: #999; margin-top: 20px;">নেই</p>';
                 return;
             }
-
             items.reverse().forEach(item => {
                 const html = `
                     <div class="log-item" style="opacity: 0.7;">
@@ -622,12 +600,11 @@
             const pCount = document.getElementById('pending-count');
             pList.innerHTML = '';
             let count = 0;
-
             snapshot.forEach(child => {
                 count++;
                 const item = child.val();
                 const key = child.key;
-                const html = `
+                pList.innerHTML += `
                     <div class="pending-row">
                         <div style="font-weight:600; font-size:15px;">
                             ${item.name} <span style="float:right; color:var(--primary);">৳${item.amount}</span>
@@ -641,7 +618,6 @@
                         </div>
                     </div>
                 `;
-                pList.innerHTML += html;
             });
             pCount.innerText = count;
             if(count === 0) pList.innerHTML = '<p style="font-size:12px; text-align:center; color:#888;">কোনো পেন্ডিং নেই</p>';
@@ -652,30 +628,28 @@
         if(!confirm("নিশ্চিত জমা করবেন?")) return;
         db.ref('pending_requests/' + key).once('value').then(snap => {
             const data = snap.val();
-            const verifiedData = {
+            const updates = {};
+            updates['/transactions/' + Date.now()] = {
                 type: 'deposit', name: data.name, amount: data.amount,
                 method: data.method, timestamp: firebase.database.ServerValue.TIMESTAMP,
                 dateStr: new Date().toLocaleDateString('bn-BD')
             };
-            const updates = {};
-            updates['/transactions/' + Date.now()] = verifiedData;
             updates['/pending_requests/' + key] = null;
             return db.ref().update(updates);
-        }).then(() => showToast("জমা গ্রহণ করা হয়েছে!"));
+        }).then(() => showToast("গ্রহণ করা হয়েছে!"));
     };
 
     window.rejectReq = function(key, name, amount) {
-        const reason = prompt("বাতিলের কারণ লিখুন:", "যাচাইকরণে ব্যর্থ");
+        const reason = prompt("বাতিলের কারণ:", "যাচাইকরণে ব্যর্থ");
         if(reason === null) return;
         db.ref('pending_requests/' + key).once('value').then(snap => {
             const data = snap.val();
-            const rejectedData = {
+            const updates = {};
+            updates['/rejected_requests/' + Date.now()] = {
                 name: data.name, amount: data.amount, reason: reason,
                 timestamp: firebase.database.ServerValue.TIMESTAMP,
                 dateStr: new Date().toLocaleDateString('bn-BD')
             };
-            const updates = {};
-            updates['/rejected_requests/' + Date.now()] = rejectedData;
             updates['/pending_requests/' + key] = null;
             return db.ref().update(updates);
         }).then(() => showToast("বাতিল করা হয়েছে"));
@@ -683,19 +657,17 @@
 
     window.openModal = function(id) { document.getElementById('modal-'+id).style.display = 'flex'; }
     window.closeModal = function(id) { document.getElementById('modal-'+id).style.display = 'none'; }
-    
     window.switchTab = function(tab) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.list-container').forEach(l => l.style.display = 'none');
         document.getElementById('tab-'+tab).classList.add('active');
         document.getElementById('list-'+tab).style.display = 'block';
     }
-
     function showToast(msg) {
         const t = document.getElementById("toast");
         document.getElementById("toast-msg").innerText = msg;
         t.className = "show";
-        setTimeout(() => { t.className = t.className.replace("show", ""); }, 3000);
+        setTimeout(() => t.className = t.className.replace("show", ""), 3000);
     }
 </script>
 
